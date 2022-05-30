@@ -2,6 +2,7 @@ import { User } from 'src/users/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   ManyToOne,
   PrimaryGeneratedColumn,
@@ -14,7 +15,10 @@ export class Note {
   id: string;
 
   @Column('varchar')
-  text: string;
+  title: string;
+
+  @Column('varchar', { nullable: true })
+  text?: string;
 
   @ManyToOne(() => User, (user) => user.notes)
   user: User;
@@ -27,4 +31,7 @@ export class Note {
 
   @UpdateDateColumn()
   updatedAt: string;
+
+  @DeleteDateColumn()
+  deletedAt: string;
 }
