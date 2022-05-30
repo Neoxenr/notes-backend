@@ -1,25 +1,22 @@
 import {
   Controller,
-  Get,
   Body,
   Patch,
   Param,
   Delete,
   ParseUUIDPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Get(':userId')
-  async findOne(@Param('userId', ParseUUIDPipe) userId: string): Promise<User> {
-    return this.usersService.findOne(userId);
-  }
-
+  @UseGuards(AuthGuard('jwt'))
   @Patch(':userId')
   async update(
     @Param('userId', ParseUUIDPipe) userId: string,
@@ -28,6 +25,7 @@ export class UsersController {
     return this.usersService.update(userId, updateUserDto);
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Delete(':userId')
   async remove(
     @Param('userId', ParseUUIDPipe) userId: string,

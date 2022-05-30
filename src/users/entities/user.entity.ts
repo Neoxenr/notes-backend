@@ -1,4 +1,4 @@
-import { IsEmail } from 'class-validator';
+import { IsEmail, IsUUID } from 'class-validator';
 import { Note } from 'src/notes/entities/note.entity';
 import {
   Column,
@@ -14,12 +14,12 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column('varchar')
-  name: string;
-
   @IsEmail()
   @Column('varchar')
   email: string;
+
+  @Column('varchar')
+  password: string;
 
   @OneToMany(() => Note, (note) => note.user, { nullable: true })
   notes?: Note[];
