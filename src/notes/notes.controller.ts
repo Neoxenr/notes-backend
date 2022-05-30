@@ -7,6 +7,8 @@ import {
   Param,
   Delete,
   ParseUUIDPipe,
+  Query,
+  ParseBoolPipe,
 } from '@nestjs/common';
 import { NotesService } from './notes.service';
 import { CreateNoteDto } from './dto/create-note.dto';
@@ -28,8 +30,9 @@ export class NotesController {
   @Get(':userId/notes')
   async findAll(
     @Param('userId', ParseUUIDPipe) userId: string,
+    @Query('trash', ParseBoolPipe) isTrash: boolean,
   ): Promise<Note[]> {
-    return this.notesService.findAll(userId);
+    return this.notesService.findAll(userId, isTrash);
   }
 
   @Get(':userId/notes/:noteId')
@@ -45,15 +48,24 @@ export class NotesController {
     @Param('userId', ParseUUIDPipe) userId: string,
     @Param('noteId', ParseUUIDPipe) noteId: string,
     @Body() updateNoteDto: UpdateNoteDto,
-  ): Promise<Note> {
+  ): Promise<boolean> {
     return this.notesService.update(userId, noteId, updateNoteDto);
+  }
+
+  @Patch(':userId/notes/:noteId/restore')
+  async restore(
+    @Param('userId', ParseUUIDPipe) userId: string,
+    @Param('noteId', ParseUUIDPipe) noteId: string,
+  ): Promise<boolean> {
+    return this.notesService.restore(userId, noteId);
   }
 
   @Delete(':userId/notes/:noteId')
   async remove(
     @Param('userId', ParseUUIDPipe) userId: string,
     @Param('noteId', ParseUUIDPipe) noteId: string,
+    @Query('softDelete', ParseBoolPipe) isSoftDelete: boolean,
   ): Promise<boolean> {
-    return this.notesService.remove(userId, noteId);
+    return this.notesService.remove(userId, noteId, isSoftDelete);
   }
 }
