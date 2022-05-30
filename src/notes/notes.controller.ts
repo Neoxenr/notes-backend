@@ -9,16 +9,19 @@ import {
   ParseUUIDPipe,
   Query,
   ParseBoolPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { NotesService } from './notes.service';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
 import { Note } from './entities/note.entity';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('users')
 export class NotesController {
   constructor(private readonly notesService: NotesService) {}
 
+  @UseGuards(AuthGuard('jwt'))
   @Post(':userId/notes')
   async create(
     @Param('userId', ParseUUIDPipe) userId: string,
@@ -27,6 +30,7 @@ export class NotesController {
     return this.notesService.create(userId, createNoteDto);
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Get(':userId/notes')
   async findAll(
     @Param('userId', ParseUUIDPipe) userId: string,
@@ -35,6 +39,7 @@ export class NotesController {
     return this.notesService.findAll(userId, isTrash);
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Get(':userId/notes/:noteId')
   async findOne(
     @Param('userId', ParseUUIDPipe) userId: string,
@@ -43,6 +48,7 @@ export class NotesController {
     return this.notesService.findOne(userId, noteId);
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Patch(':userId/notes/:noteId')
   async update(
     @Param('userId', ParseUUIDPipe) userId: string,
@@ -52,6 +58,7 @@ export class NotesController {
     return this.notesService.update(userId, noteId, updateNoteDto);
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Patch(':userId/notes/:noteId/restore')
   async restore(
     @Param('userId', ParseUUIDPipe) userId: string,
@@ -60,6 +67,7 @@ export class NotesController {
     return this.notesService.restore(userId, noteId);
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Delete(':userId/notes/:noteId')
   async remove(
     @Param('userId', ParseUUIDPipe) userId: string,
