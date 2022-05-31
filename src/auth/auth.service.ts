@@ -25,7 +25,7 @@ export class AuthService {
       })) > 0;
 
     if (userIsExist) {
-      throw new ConflictException('The user already exists');
+      throw new ConflictException('Пользователь с таким e-mail уже существует');
     }
 
     const hashedPassword: string = await hash(dto.password, 2);
@@ -44,13 +44,13 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new NotFoundException('The user is not exist');
+      throw new NotFoundException('Неверный e-mail адрес');
     }
 
     const isCorrectPassword = await compare(dto.password, user.password);
 
     if (!isCorrectPassword) {
-      throw new BadRequestException('The password is incorrect');
+      throw new BadRequestException('Неверный пароль');
     }
 
     const jwtToken = await this.jwtService.signAsync({ sub: user.id });

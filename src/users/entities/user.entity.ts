@@ -1,4 +1,4 @@
-import { IsEmail, IsUUID } from 'class-validator';
+import { IsEmail } from 'class-validator';
 import { Note } from 'src/notes/entities/note.entity';
 import {
   Column,

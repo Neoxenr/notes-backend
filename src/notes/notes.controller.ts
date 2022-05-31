@@ -10,6 +10,7 @@ import {
   Query,
   ParseBoolPipe,
   UseGuards,
+  Request,
 } from '@nestjs/common';
 import { NotesService } from './notes.service';
 import { CreateNoteDto } from './dto/create-note.dto';
@@ -17,63 +18,63 @@ import { UpdateNoteDto } from './dto/update-note.dto';
 import { Note } from './entities/note.entity';
 import { AuthGuard } from '@nestjs/passport';
 
-@Controller('users')
+@Controller('notes')
 export class NotesController {
   constructor(private readonly notesService: NotesService) {}
 
   @UseGuards(AuthGuard('jwt'))
-  @Post(':userId/notes')
+  @Post()
   async create(
-    @Param('userId', ParseUUIDPipe) userId: string,
+    @Request() req,
     @Body() createNoteDto: CreateNoteDto,
   ): Promise<Note> {
-    return this.notesService.create(userId, createNoteDto);
+    return this.notesService.create(req.user.id, createNoteDto);
   }
 
   @UseGuards(AuthGuard('jwt'))
-  @Get(':userId/notes')
+  @Get()
   async findAll(
-    @Param('userId', ParseUUIDPipe) userId: string,
+    @Request() req,
     @Query('trash', ParseBoolPipe) isTrash: boolean,
   ): Promise<Note[]> {
-    return this.notesService.findAll(userId, isTrash);
+    return this.notesService.findAll(req.user.id, isTrash);
   }
 
   @UseGuards(AuthGuard('jwt'))
-  @Get(':userId/notes/:noteId')
+  @Get(':noteId')
   async findOne(
-    @Param('userId', ParseUUIDPipe) userId: string,
+    @Request() req,
     @Param('noteId', ParseUUIDPipe) noteId: string,
   ): Promise<Note> {
-    return this.notesService.findOne(userId, noteId);
+    return this.notesService.findOne(req.user.id, noteId);
   }
 
   @UseGuards(AuthGuard('jwt'))
-  @Patch(':userId/notes/:noteId')
+  @Patch(':noteId')
   async update(
-    @Param('userId', ParseUUIDPipe) userId: string,
+    @Request() req,
     @Param('noteId', ParseUUIDPipe) noteId: string,
     @Body() updateNoteDto: UpdateNoteDto,
   ): Promise<boolean> {
-    return this.notesService.update(userId, noteId, updateNoteDto);
+    return this.notesService.update(req.user.id, noteId, updateNoteDto);
   }
 
   @UseGuards(AuthGuard('jwt'))
-  @Patch(':userId/notes/:noteId/restore')
+  @Patch(':noteId/restore')
   async restore(
-    @Param('userId', ParseUUIDPipe) userId: string,
+    @Request() req,
     @Param('noteId', ParseUUIDPipe) noteId: string,
   ): Promise<boolean> {
-    return this.notesService.restore(userId, noteId);
+    return this.notesService.restore(req.user.id, noteId);
   }
 
   @UseGuards(AuthGuard('jwt'))
-  @Delete(':userId/notes/:noteId')
+  @Delete(':noteId')
   async remove(
-    @Param('userId', ParseUUIDPipe) userId: string,
+    @Request() req,
     @Param('noteId', ParseUUIDPipe) noteId: string,
     @Query('softDelete', ParseBoolPipe) isSoftDelete: boolean,
   ): Promise<boolean> {
-    return this.notesService.remove(userId, noteId, isSoftDelete);
+    return this.notesService.remove(req.user.id, noteId, isSoftDelete);
   }
 }

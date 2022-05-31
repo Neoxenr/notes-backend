@@ -2,14 +2,12 @@ import {
   Controller,
   Body,
   Patch,
-  Param,
   Delete,
-  ParseUUIDPipe,
+  Request,
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './entities/user.entity';
 import { AuthGuard } from '@nestjs/passport';
 
 @Controller('users')
@@ -17,19 +15,17 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @UseGuards(AuthGuard('jwt'))
-  @Patch(':userId')
+  @Patch()
   async update(
-    @Param('userId', ParseUUIDPipe) userId: string,
+    @Request() req,
     @Body() updateUserDto: UpdateUserDto,
-  ): Promise<User> {
-    return this.usersService.update(userId, updateUserDto);
+  ): Promise<boolean> {
+    return this.usersService.update(req.user.id, updateUserDto);
   }
 
   @UseGuards(AuthGuard('jwt'))
-  @Delete(':userId')
-  async remove(
-    @Param('userId', ParseUUIDPipe) userId: string,
-  ): Promise<boolean> {
-    return this.usersService.remove(userId);
+  @Delete()
+  async remove(@Request() req): Promise<boolean> {
+    return this.usersService.remove(req.user.id);
   }
 }
