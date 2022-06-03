@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, UpdateResult } from 'typeorm';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
+import { hash } from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -14,10 +15,19 @@ export class UsersService {
     return this.usersRepository.findOneOrFail(id);
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
-    await this.usersRepository.update(id, updateUserDto);
+  async update(id: string, updateUserDto: UpdateUserDto): Promise<boolean> {
+    const hashedPassword: string = await hash(updateUserDto.password, 2);
 
-    return this.findOne(id);
+    const updatedUser: UpdateResult = await this.usersRepository.update(id, {
+      ...updateUserDto,
+      password: hashedPassword,
+    });
+
+    if (!updatedUser.affected) {
+      throw new NotFoundException(id);
+    }
+
+    return true;
   }
 
   async remove(id: string): Promise<boolean> {

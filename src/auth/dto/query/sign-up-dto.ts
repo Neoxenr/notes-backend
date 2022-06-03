@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail } from 'class-validator';
 
-export class UpdateUserDto {
+export class SignUpDto {
   @ApiProperty({
     type: String,
-    description: 'New user email',
+    description: 'Email of new user',
     required: true,
   })
   @IsEmail()
@@ -12,7 +12,7 @@ export class UpdateUserDto {
 
   @ApiProperty({
     type: String,
-    description: 'New user password',
+    description: 'Password of new user',
     required: true,
   })
   password: string;
