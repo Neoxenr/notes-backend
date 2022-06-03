@@ -1,1 +1,1 @@
-export { SignInResponseDto } from './SignInResponseDto';
+export { SignInResponseDto } from './sign-in-response-dto';
